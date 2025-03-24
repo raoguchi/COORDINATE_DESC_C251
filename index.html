@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Coordinate Descent Project Viewer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        nav {
+            background-color: #222;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-left,
+        .nav-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: #eee;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav a:hover {
+            background-color: #444;
+            color: #fff;
+        }
+
+        iframe {
+            width: 100%;
+            height: calc(100vh - 56px);
+            border: none;
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-left,
+            .nav-right {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .nav-right {
+                align-items: flex-end;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="nav-left">
+            <a onclick="loadPage('summary.html')">🔍 Summary</a>
+            <a onclick="loadPage('CSE_251A_Project_2.pdf')">📄 Full Paper</a>
+        </div>
+        <div class="nav-right">
+            <a href="https://github.com/raoguchi/COORDINATE_DESC_C251" target="_blank">🌐 GitHub Repo</a>
+        </div>
+    </nav>
+
+    <iframe id="viewer" src="summary.html"></iframe>
+
+    <script>
+        function loadPage(page) {
+            document.getElementById('viewer').src = page;
+        }
+    </script>
+
+</body>
+
+</html>

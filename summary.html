@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Coordinate Descent for Logistic Regression</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 900px; margin: auto; padding: 20px; }
+        code { background-color: #f4f4f4; padding: 2px 4px; border-radius: 4px; }
+        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; overflow-x: auto; }
+        table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        img { max-width: 100%; height: auto; margin: 20px 0; }
+        h1, h2, h3 { color: #333; }
+    </style>
+</head>
+<body>
+
+<h1>Coordinate Descent for Logistic Regression</h1>
+<p><strong>Ryosuke Oguchi</strong><br>
+<em>roguchi@ucsd.edu</em><br>
+Winter 2024 — CSE 251A: Learning Algorithms</p>
+
+<h2>🧠 Project Overview</h2>
+<p>This project investigates <strong>coordinate descent</strong> strategies to solve an unconstrained optimization problem for logistic regression on a binary classification task. The main goal is to compare how different coordinate selection rules impact the convergence of the loss function.</p>
+
+<p>We analyze the effectiveness of:</p>
+<ul>
+<li>Random coordinate selection</li>
+<li>Maximum Gradient selection (Gauss-Southwell Rule)</li>
+<li>Gradient-based selection with adaptive step size (Lipschitz-aware)</li>
+</ul>
+
+<h2>📌 Problem Statement</h2>
+<p>We aim to solve:</p>
+<pre><code>min_w L(w)</code></pre>
+
+<p>Where <code>L(w)</code> is the logistic loss:</p>
+<pre><code>L(w) = sum_{i=1}^{n} log(1 + exp(-y^{(i)} w^T x^{(i)}))</code></pre>
+
+<h2>🚀 Coordinate Descent Methods</h2>
+
+<h3>🔹 1. Max Gradient (Gauss-Southwell)</h3>
+<ul>
+<li><strong>Rule</strong>: Pick coordinate <code>i = argmax_i |∇_i L(w)|</code></li>
+<li><strong>Update</strong>: <pre><code>w_i^{t+1} = w_i^{t} - η * ∇_i L(w)</code></pre></li>
+<li><strong>Learning rate</strong>: Fixed <code>η = 0.001</code></li>
+<li><strong>Requires</strong>: Convex loss and access to gradient vector.</li>
+</ul>
+
+<h3>🔹 2. Random Coordinate Selection</h3>
+<ul>
+<li>Select coordinate <code>i</code> uniformly at random.</li>
+<li>Use the same update rule as above.</li>
+</ul>
+
+<h3>🔹 3. Lipschitz-aware Gradient Selection (Adaptive GS)</h3>
+<ul>
+<li>Select coordinate with max gradient.</li>
+<li>Adjust step size using the local curvature:</li>
+<pre><code>w^{t+1}_i = w^t_i - (1 / H(w)_i,i) * ∇_i L(w)</code></pre>
+<li><code>H(w)</code> is the Hessian, and the update uses its diagonal elements.</li>
+<li><strong>Motivation</strong>: Based on Nutini et al. (2015), this adaptive learning rate can drastically accelerate convergence.</li>
+</ul>
+
+<h2>🔬 Experimental Setup</h2>
+<ul>
+<li><strong>Dataset</strong>: UCI Wine Dataset (Classes 1 vs 2), 13 features, 130 samples</li>
+<li><strong>Loss</strong>: Logistic loss</li>
+<li><strong>Convergence Threshold</strong>: Final loss from sklearn’s <code>LogisticRegression</code>:
+<pre><code>L* = 31.89404</code></pre></li>
+</ul>
+
+<h2>📊 Results</h2>
+
+<h3>Baseline: Random vs Max Gradient</h3>
+<img src="images/collective_base.png" alt="collective_base">
+
+<h3>GSL Rule (Lipschitz-aware)</h3>
+<img src="images/gsl.png" alt="gsl">
+
+<h3>Max Gradient (Full Scale)</h3>
+<img src="images/max_grad.png" alt="max_grad">
+
+<h3>Random Coordinate Descent</h3>
+<img src="images/random.png" alt="random">
+
+<h3>All Methods Combined</h3>
+<img src="images/collective.png" alt="collective">
+
+<h2>📈 Key Takeaways</h2>
+<ul>
+<li>Naively selecting the largest gradient does not guarantee optimal efficiency.</li>
+<li>Adaptive step size using curvature (Hessian diagonal) <strong>massively accelerates</strong> convergence.</li>
+<li>For high-dimensional datasets, computing full gradients or Hessians may be expensive, raising practical trade-offs.</li>
+</ul>
+
+<h2>🧪 Pseudocode (Max Gradient Method)</h2>
+<pre><code>Input: f(x), ∇f(x), x0, α, ε, max_iter
+x = x0
+while ∥∇f(x)∥ > ε:
+    g = ∇f(x)
+    i = argmax |g_i|
+    x[i] -= α * g[i]</code></pre>
+
+<h2>📂 Files</h2>
+<table>
+<tr><th>File</th><th>Description</th></tr>
+<tr><td><code>code.ipynb</code></td><td>Notebook with all experiments and plots</td></tr>
+<tr><td><code>CSE_251A_Project_2.pdf</code></td><td>Final project report</td></tr>
+<tr><td><code>collective_base.png</code></td><td>Random vs Max Gradient comparison</td></tr>
+<tr><td><code>gsl.png</code></td><td>GSL (adaptive) loss convergence</td></tr>
+<tr><td><code>max_grad.png</code></td><td>Max Gradient convergence curve</td></tr>
+<tr><td><code>random.png</code></td><td>Random selection convergence curve</td></tr>
+<tr><td><code>collective.png</code></td><td>Combined plot of all methods</td></tr>
+</table>
+
+<h2>📚 References</h2>
+<ul>
+<li>Nutini et al. (2015). <em>Coordinate Descent Converges Faster with the Gauss-Southwell Rule than Random Selection</em>. JMLR.</li>
+<li>Nesterov Yu. (2012). <em>Efficiency of Coordinate Descent Methods on Huge-Scale Optimization Problems</em>. SIAM.</li>
+</ul>
+
+<h2>🙌 Acknowledgements</h2>
+<ul>
+<li><strong>Instructor</strong>: Prof. Taylor Berg-Kirkpatrick</li>
+<li><strong>Course</strong>: CSE 251A — Learning Algorithms, Winter 2024, UC San Diego</li>
+</ul>
+
+</body>
+</html>
